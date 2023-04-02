@@ -4,8 +4,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import fhnw.emoba.EmobaApp
 import fhnw.emoba.freezerapp.model.FreezerModel
-import fhnw.emoba.freezerapp.model.tabs.TabsModel
-import fhnw.emoba.freezerapp.ui.AppUI
 import fhnw.emoba.freezerapp.ui.Tabs.TabsUI
 
 
@@ -16,7 +14,7 @@ object FreezerApp : EmobaApp {
 
     @Composable
     override fun CreateUI() {
-        TabsUI(TabsModel)
+        TabsUI(FreezerModel)
     }
 
 }

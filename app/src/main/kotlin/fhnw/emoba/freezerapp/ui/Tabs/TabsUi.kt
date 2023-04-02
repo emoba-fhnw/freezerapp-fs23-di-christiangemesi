@@ -9,12 +9,13 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import fhnw.emoba.freezerapp.model.FreezerModel
 import fhnw.emoba.freezerapp.model.tabs.AbailableTabs
-import fhnw.emoba.freezerapp.model.tabs.TabsModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TabsUI(model: TabsModel) {
+fun TabsUI(model: FreezerModel) {
     MaterialTheme {
         Scaffold(
             topBar = { Bar(model) },
@@ -29,14 +30,14 @@ fun TabsUI(model: TabsModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Bar(model: TabsModel) {
+private fun Bar(model: FreezerModel) {
     with(model) {
         TopAppBar(title = { Text(title) })
     }
 }
 
 @Composable
-private fun Body(model: TabsModel, padding: PaddingValues) {
+private fun Body(model: FreezerModel, padding: PaddingValues) {
     with(model) {
         //TODO: mit TabsRow und Tab ersetzen
         Text("to be replaced")
@@ -57,7 +58,7 @@ private fun Body(model: TabsModel, padding: PaddingValues) {
 }
 
 @Composable
-private fun FAB(model: TabsModel) {
+private fun FAB(model: FreezerModel) {
     with(model) {
         FloatingActionButton(
             onClick = { selectedTab = AbailableTabs.FIRST }) {

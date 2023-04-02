@@ -1,25 +1,57 @@
-package fhnw.emoba.freezerapp.ui
+package fhnw.emoba.freezerapp.ui.Tabs
 
-
-import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import fhnw.emoba.freezerapp.model.FreezerModel
 import fhnw.emoba.freezerapp.model.tabs.AvailableTabs
-import fhnw.emoba.freezerapp.ui.Tabs.HitsTab
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppUi(model: FreezerModel) {
+    MaterialTheme {
+        Scaffold(
+            topBar = { Bar(model) },
+            content = { padding ->
+                Body(model, padding)
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun Bar(model: FreezerModel) {
+    with(model) {
+        TopAppBar(title = { Text(title) })
+    }
+}
 
 @Composable
-fun AppUI(model: FreezerModel) {
-    BackHandler(enabled = true) {
-        model.selectedTab = AvailableTabs.HITS
+private fun Body(model: FreezerModel, padding: PaddingValues) {
+    with(model) {
+        Column(modifier = Modifier.padding(padding)) {
+            TabRow(selectedTabIndex = selectedTab.ordinal) {
+                AvailableTabs.values().forEach { tab ->
+                    Tab(
+                        selected = selectedTab == tab,
+                        onClick = { selectedTab = tab },
+                        text = { Text(tab.title) }
+                    )
+                }
+            }
+            when (selectedTab) {
+                AvailableTabs.HITS -> HitsTab(model)
+                AvailableTabs.SONGS -> SongsTab(model)
+                AvailableTabs.ALBUMS -> AlbumsTab(model)
+                AvailableTabs.RADIO -> RadioTab(model)
+            }
+        }
     }
-    when (model.selectedTab) {
-        AvailableTabs.HITS -> HitsTab(model)
-        AvailableTabs.SONGS -> TODO()
-        AvailableTabs.ALBUMS -> TODO()
-        AvailableTabs.RADIO -> TODO()
-    }
-
-
-
 }

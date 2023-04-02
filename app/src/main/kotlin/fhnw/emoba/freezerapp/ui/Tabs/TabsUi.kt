@@ -9,7 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import fhnw.emoba.freezerapp.model.FreezerModel
-import fhnw.emoba.freezerapp.model.tabs.AbailableTabs
+import fhnw.emoba.freezerapp.model.tabs.AvailableTabs
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,11 +38,9 @@ private fun Bar(model: FreezerModel) {
 @Composable
 private fun Body(model: FreezerModel, padding: PaddingValues) {
     with(model) {
-        //TODO: mit TabsRow und Tab ersetzen
-        Text("to be replaced")
         Column(modifier = Modifier.padding(padding)) {
             TabRow(selectedTabIndex = selectedTab.ordinal) {
-                AbailableTabs.values().forEach { tab ->
+                AvailableTabs.values().forEach { tab ->
                     Tab(
                         selected = selectedTab == tab,
                         onClick = { selectedTab = tab },
@@ -50,23 +48,28 @@ private fun Body(model: FreezerModel, padding: PaddingValues) {
                     )
                 }
             }
-            ContentBox(tabContent = selectedTab)
+            when (selectedTab) {
+                AvailableTabs.HITS -> HitsTab(model)
+                AvailableTabs.SONGS -> SongsTab(model)
+                AvailableTabs.ALBUMS -> AlbumsTab(model)
+                AvailableTabs.RADIO -> RadioTab(model)
+            }
         }
     }
-
 }
+
 
 @Composable
 private fun FAB(model: FreezerModel) {
     with(model) {
         FloatingActionButton(
-            onClick = { selectedTab = AbailableTabs.HITS }) {
+            onClick = { selectedTab = AvailableTabs.HITS }) {
             Icon(Icons.Filled.Home, "Spring")
         }
     }
 }
 
 @Composable
-private fun ContentBox(tabContent: AbailableTabs) {
+private fun ContentBox(tabContent: AvailableTabs) {
     Text(tabContent.title)
 }

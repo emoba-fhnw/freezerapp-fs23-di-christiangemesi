@@ -1,6 +1,5 @@
 package fhnw.emoba.freezerapp.ui.Tabs
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -61,7 +60,7 @@ private fun Body(model: FreezerModel, padding: PaddingValues) {
 private fun FAB(model: FreezerModel) {
     with(model) {
         FloatingActionButton(
-            onClick = { selectedTab = AbailableTabs.FIRST }) {
+            onClick = { selectedTab = AbailableTabs.HITS }) {
             Icon(Icons.Filled.Home, "Spring")
         }
     }

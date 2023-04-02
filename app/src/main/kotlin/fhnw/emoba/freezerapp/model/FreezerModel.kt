@@ -9,5 +9,5 @@ import fhnw.emoba.freezerapp.model.tabs.AbailableTabs
 object FreezerModel {
     val title = "Tabs Example App"
 
-    var selectedTab by mutableStateOf(AbailableTabs.FIRST)
+    var selectedTab by mutableStateOf(AbailableTabs.HITS)
 }

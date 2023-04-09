@@ -48,8 +48,7 @@ object MovieService {
             val connection = imageUrl.openConnection() as HttpURLConnection
             connection.doInput = true
             connection.connect()
-            val input = connection.inputStream
-            BitmapFactory.decodeStream(input).asImageBitmap()
+            BitmapFactory.decodeStream(connection.inputStream).asImageBitmap()
         } catch (e: Exception) {
             null
         }
@@ -59,29 +58,24 @@ object MovieService {
         val url = URL(tracklist)
         val connection = url.openConnection() as HttpsURLConnection
 
-        try {
+        return try {
             connection.connect()
             val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
             val jsonObject = JSONObject(jsonString)
 
-            if (jsonObject.has("data")) {
-                val tracksJsonArray = jsonObject.getJSONArray("data")
-                val tracks = mutableListOf<String>()
+            val tracksJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
 
-                for (i in 0 until tracksJsonArray.length()) {
-                    val trackJson = tracksJsonArray.getJSONObject(i)
-                    val previewUrl = trackJson.getString("preview")
-                    tracks.add(previewUrl)
-                }
-                return tracks;
-            } else {
-                return emptyList()
+            val tracks = mutableListOf<String>()
+
+            for (i in 0 until tracksJsonArray.length()) {
+                val trackJson = tracksJsonArray.getJSONObject(i)
+                val previewUrl = trackJson.getString("preview")
+                tracks.add(previewUrl)
             }
+
+            tracks
         } finally {
             connection.disconnect()
         }
     }
-
-
-
 }

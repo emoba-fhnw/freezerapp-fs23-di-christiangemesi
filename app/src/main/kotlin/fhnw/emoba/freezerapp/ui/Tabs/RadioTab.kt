@@ -30,24 +30,24 @@ fun RadioTab(model: FreezerModel) {
     ) {
         radioList.forEach { radio ->
             item {
-                RadioItem(radio)
+                RadioItem(radio, model) // pass the model instance
             }
         }
-
     }
 }
 
+
 @Composable
-private fun RadioItem(radio: Radio) {
+fun RadioItem(radio: Radio, model: FreezerModel) {
     var isFavorite by remember { mutableStateOf(radio.isFavorite) }
     Row(
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        radio.imageBitmap?.let {
+        radio.imageBitmap?.let { bitmap ->
             Image(
-                it,
+                bitmap,
                 contentDescription = "Radio Image",
                 Modifier
                     .size(60.dp)
@@ -60,7 +60,10 @@ private fun RadioItem(radio: Radio) {
             Text(radio.title)
             Spacer(Modifier.height(4.dp))
             Row {
-                IconButton(onClick = { isFavorite = !isFavorite }) {
+                IconButton(onClick = {
+                    isFavorite = !isFavorite
+                    model.toggleFavorite(radio)
+                }) {
                     Icon(
                         if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
@@ -73,6 +76,7 @@ private fun RadioItem(radio: Radio) {
         }
     }
 }
+
 
 
 

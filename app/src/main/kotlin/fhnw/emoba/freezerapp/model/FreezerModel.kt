@@ -34,9 +34,11 @@ class FreezerModel(private val service: MovieService) {
     fun toggleFavorite(radio: Radio) {
         radio.isFavorite = !radio.isFavorite
         if (radio.isFavorite) {
-            favoriteRadios = favoriteRadios + radio
+            favoriteRadios = favoriteRadios + Radio(radio.title, radio.image, radio.tracklist, radio.isFavorite, radio.imageBitmap)
         } else {
             favoriteRadios = favoriteRadios - radio
         }
     }
+
+
 }

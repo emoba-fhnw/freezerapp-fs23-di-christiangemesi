@@ -32,7 +32,8 @@ object MovieService {
                     val tracklist = radioJson.getString("tracklist")
                     val tracks = downloadTracks(tracklist)
 
-                    filteredRadio.add(Radio(title, cover, tracklist, false, imageBitmap, tracks))
+                    filteredRadio.add(Radio(title, false, imageBitmap, tracks))
+
                 }
 
                 filteredRadio

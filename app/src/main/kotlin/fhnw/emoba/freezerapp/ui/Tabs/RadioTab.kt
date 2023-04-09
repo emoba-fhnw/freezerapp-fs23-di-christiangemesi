@@ -7,7 +7,10 @@ import fhnw.emoba.freezerapp.model.FreezerModel
 
 @Composable
 fun RadioTab(model: FreezerModel) {
+
     Column {
         Text("Radioooooo")
+        val movie = model.movieList
+        Text(movie.toString())
     }
 }

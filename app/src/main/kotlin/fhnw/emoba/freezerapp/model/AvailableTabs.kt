@@ -1,4 +1,4 @@
-package fhnw.emoba.freezerapp.model.tabs
+package fhnw.emoba.freezerapp.model
 
 enum class AvailableTabs(val title: String) {
     HITS("Hits"),

@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-
 class FreezerModel(private val service: MovieService) {
     val title = "Tabs Example App"
 
@@ -18,6 +17,7 @@ class FreezerModel(private val service: MovieService) {
 
     var loading by mutableStateOf(false)
     var movieList: List<Radio> by mutableStateOf(emptyList())
+    var favoriteRadios: List<Radio> by mutableStateOf(emptyList())
 
     private val background = SupervisorJob()
     private val modelScope = CoroutineScope(background + Dispatchers.IO)
@@ -28,6 +28,15 @@ class FreezerModel(private val service: MovieService) {
         modelScope.launch {
             movieList = service.getRadioStations()
             loading = false
+        }
+    }
+
+    fun toggleFavorite(radio: Radio) {
+        radio.isFavorite = !radio.isFavorite
+        if (radio.isFavorite) {
+            favoriteRadios = favoriteRadios + radio
+        } else {
+            favoriteRadios = favoriteRadios - radio
         }
     }
 }

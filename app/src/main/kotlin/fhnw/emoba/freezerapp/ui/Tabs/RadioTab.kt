@@ -9,13 +9,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import fhnw.emoba.freezerapp.data.Radio
 import fhnw.emoba.freezerapp.model.FreezerModel
+import android.media.MediaPlayer
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.runtime.*
 
 @Composable
 fun RadioTab(model: FreezerModel) {
@@ -36,6 +39,7 @@ fun RadioTab(model: FreezerModel) {
 
 @Composable
 private fun RadioItem(radio: Radio) {
+    var isFavorite by remember { mutableStateOf(radio.isFavorite) }
     Row(
         Modifier
             .fillMaxWidth()
@@ -55,12 +59,21 @@ private fun RadioItem(radio: Radio) {
         Column(Modifier.weight(1f)) {
             Text(radio.title)
             Spacer(Modifier.height(4.dp))
-            IconButton(onClick = { /* TODO: Play the radio */ }) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = "Play Radio")
+            Row {
+                IconButton(onClick = { isFavorite = !isFavorite }) {
+                    Icon(
+                        if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
+                    )
+                }
+                IconButton(onClick = { /* TODO: Play the radio */ }) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = "Play Radio")
+                }
             }
         }
     }
 }
+
 
 
 

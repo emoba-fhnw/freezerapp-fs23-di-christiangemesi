@@ -20,9 +20,12 @@ fun RadioTab(model: FreezerModel) {
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
-        items(radioList) { item ->
-            RadioItem(item)
+        radioList.forEach { radio ->
+            item {
+                RadioItem(radio)
+            }
         }
+
     }
 }
 

@@ -14,7 +14,7 @@ object FreezerApp : EmobaApp {
     override fun initialize(activity: ComponentActivity) {
         val service = MovieService
         model = FreezerModel(service)
-        model.loadMovieAsync()
+        model.loadRadioStationsAsync()
     }
 
     @Composable

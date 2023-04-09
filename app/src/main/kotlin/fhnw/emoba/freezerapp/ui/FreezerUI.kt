@@ -2,6 +2,7 @@ package fhnw.emoba.freezerapp.ui.Tabs
 
 import HitsTab
 import RadioTab
+import SongsTab
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding

@@ -23,7 +23,7 @@ import androidx.compose.runtime.*
 
 @Composable
 fun RadioTab(model: FreezerModel) {
-    val radioList = model.movieList
+    val radioList = model.radioList
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),

@@ -4,6 +4,7 @@ import MovieService
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import fhnw.emoba.freezerapp.data.Radio
@@ -18,10 +19,11 @@ class FreezerModel(private val service: MovieService) {
     var selectedTab by mutableStateOf(AvailableTabs.HITS)
 
     var loading by mutableStateOf(false)
-    var movieList by mutableStateOf<List<Radio>>(emptyList())
+    var radioList by mutableStateOf<List<Radio>>(emptyList())
     var favoriteRadios by mutableStateOf<List<Radio>>(emptyList())
 
     var songsList by mutableStateOf<List<Song>>(emptyList())
+    var favoriteSongs by mutableStateOf<List<Song>>(emptyList())
 
     private val background = SupervisorJob()
     private val modelScope = CoroutineScope(background + Dispatchers.IO)
@@ -42,6 +44,24 @@ class FreezerModel(private val service: MovieService) {
         private set
 
     var currentRadio: Radio? by mutableStateOf(null) // track currently playing radio
+    var currentSong: Song? by mutableStateOf(null) // track currently playing song
+
+    fun startPlayer(song: Song) {
+        playerIsReady = false
+        try {
+            if (currentSong == song && !player.isPlaying) { // if the same song is already playing, resume playing
+                player.start()
+            } else {
+                currentSong = song
+                currentRadio = null
+                player.reset()
+                player.setDataSource(song.preview)
+                player.prepareAsync()
+            }
+        } catch (e: Exception) {
+            playerIsReady = true
+        }
+    }
 
     fun startPlayer(randomTrack: String) {
         playerIsReady = false
@@ -53,7 +73,7 @@ class FreezerModel(private val service: MovieService) {
                     pausePlayer()
                 }
                 currentRadio = null
-                for (radio in movieList) { // find the radio with the selected track and set it as the current radio
+                for (radio in radioList) { // find the radio with the selected track and set it as the current radio
                     if (radio.tracks.contains(randomTrack)) {
                         currentRadio = radio
                         break
@@ -72,6 +92,7 @@ class FreezerModel(private val service: MovieService) {
         player.pause()
         playerIsReady = true
         currentRadio = null // reset current radio
+        currentSong = null // reset current song
     }
 
     fun fromStart() {
@@ -80,10 +101,10 @@ class FreezerModel(private val service: MovieService) {
         playerIsReady = false
     }
 
-    fun loadMovieAsync() {
+    fun loadRadioStationsAsync() {
         loading = true
         modelScope.launch {
-            movieList = service.getRadioStations()
+            radioList = service.getRadioStations()
             loading = false
         }
     }
@@ -100,6 +121,15 @@ class FreezerModel(private val service: MovieService) {
             favoriteRadios + radio
         } else {
             favoriteRadios - radio
+        }
+    }
+
+    fun toggleFavorite(song: Song) {
+        song.isFavorite = !song.isFavorite
+        favoriteSongs = if (song.isFavorite) {
+            favoriteSongs + song
+        } else {
+            favoriteSongs - song
         }
     }
 }

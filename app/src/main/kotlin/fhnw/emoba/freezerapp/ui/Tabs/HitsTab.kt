@@ -17,5 +17,6 @@ fun HitsTab(model: FreezerModel) {
                 RadioItem(radio, model) // pass the model instance
             }
         }
+
     }
 }

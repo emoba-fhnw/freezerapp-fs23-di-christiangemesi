@@ -31,6 +31,10 @@ object MovieService {
                 val radioJson = radioJsonArray.getJSONObject(i)
                 val title = radioJson.getString("title")
                 val cover = radioJson.getString("picture_medium")
+
+
+
+
                 val tracklist = radioJson.getString("tracklist")
                 filteredRadio.add(Radio(title, cover, tracklist, false))
             }

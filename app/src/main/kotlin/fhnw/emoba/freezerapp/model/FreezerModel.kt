@@ -30,5 +30,4 @@ class FreezerModel(private val service: MovieService) {
             loading = false
         }
     }
-
 }

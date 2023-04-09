@@ -1,10 +1,11 @@
 package fhnw.emoba.freezerapp.data
 
+import androidx.compose.ui.graphics.ImageBitmap
 import org.json.JSONObject
 
 class Radio(
     val title: String,
-    val picture: String,
+    val image: String,
     val tracklist: String,
     var isFavorite: Boolean
 ) {
@@ -17,6 +18,6 @@ class Radio(
     )
 
     override fun toString(): String {
-        return "RadioStation(title='$title', picture='$picture', tracklist='$tracklist', isFavorite=$isFavorite)"
+        return "RadioStation(title='$title', picture='$image', tracklist='$tracklist', isFavorite=$isFavorite)"
     }
 }

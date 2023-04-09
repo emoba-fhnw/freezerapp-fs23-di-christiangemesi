@@ -1,9 +1,11 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -13,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import fhnw.emoba.freezerapp.data.Radio
 import fhnw.emoba.freezerapp.model.FreezerModel
+import android.media.MediaPlayer
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Pause
@@ -38,7 +41,8 @@ fun RadioTab(model: FreezerModel) {
 @Composable
 fun RadioItem(radio: Radio, model: FreezerModel) {
     var isFavorite by remember { mutableStateOf(radio.isFavorite) }
-    var isPlaying by remember { mutableStateOf(false) } // track playing status
+    var isPlaying by remember { mutableStateOf(model.currentRadio == radio && !model.playerIsReady) } // track playing status
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -69,25 +73,24 @@ fun RadioItem(radio: Radio, model: FreezerModel) {
                     )
                 }
                 IconButton(onClick = {
-                    if (model.currentRadio == null || model.currentRadio == radio) { // no radio is currently playing or this radio is already playing
+                    if (!isPlaying) { // if not playing, start playing
                         val randomTrack = radio.tracks.random()
                         model.startPlayer(randomTrack)
-                        model.currentRadio = radio // set current radio to this radio
-                        isPlaying = true // set playing status to true
-                    } else { // another radio is playing, stop it and start playing this radio
+                    } else { // if playing, pause
                         model.pausePlayer()
-                        val randomTrack = radio.tracks.random()
-                        model.startPlayer(randomTrack)
-                        model.currentRadio = radio // set current radio to this radio
-                        isPlaying = true // set playing status to true
                     }
                 }) {
                     Icon(
-                        if (isPlaying && model.currentRadio == radio) Icons.Filled.Pause else Icons.Filled.PlayArrow, // change icon based on playing status and current radio
-                        contentDescription = if (isPlaying && model.currentRadio == radio) "Pause Radio" else "Play Radio"
+                        if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow, // change icon based on playing status and current radio
+                        contentDescription = if (isPlaying) "Pause Radio" else "Play Radio"
                     )
                 }
             }
         }
     }
+
+    LaunchedEffect(model.playerIsReady) {
+        isPlaying = model.currentRadio == radio && !model.playerIsReady
+    }
 }
+

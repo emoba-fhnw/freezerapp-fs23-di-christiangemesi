@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 
 class FreezerModel(private val service: MovieService) {
     val title = "Tabs Example App"
-
     var selectedTab by mutableStateOf(AvailableTabs.HITS)
 
     var loading by mutableStateOf(false)
@@ -39,17 +38,24 @@ class FreezerModel(private val service: MovieService) {
     var playerIsReady by mutableStateOf(true)
         private set
 
-    private var currentTrack: String? = null
-    var currentRadio by mutableStateOf<Radio?>(null)
-
+    var currentRadio: Radio? by mutableStateOf(null) // track currently playing radio
 
     fun startPlayer(randomTrack: String) {
         playerIsReady = false
         try {
-            if (currentTrack == randomTrack && !player.isPlaying) {
+            if (currentRadio != null && currentRadio!!.tracks.contains(randomTrack) && !player.isPlaying) { // if the same track is already playing, resume playing
                 player.start()
             } else {
-                currentTrack = randomTrack
+                currentRadio?.let { // stop playing the current radio
+                    pausePlayer()
+                }
+                currentRadio = null
+                for (radio in movieList) { // find the radio with the selected track and set it as the current radio
+                    if (radio.tracks.contains(randomTrack)) {
+                        currentRadio = radio
+                        break
+                    }
+                }
                 player.reset()
                 player.setDataSource(randomTrack)
                 player.prepareAsync()
@@ -62,9 +68,8 @@ class FreezerModel(private val service: MovieService) {
     fun pausePlayer() {
         player.pause()
         playerIsReady = true
-        currentRadio = null // set current radio to null
+        currentRadio = null // reset current radio
     }
-
 
     fun fromStart() {
         player.seekTo(0)

@@ -69,7 +69,11 @@ fun RadioItem(radio: Radio, model: FreezerModel) {
                         contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
                     )
                 }
-                IconButton(onClick = { /* TODO: Play the radio */ }) {
+                IconButton(onClick = {
+                    //get the first Track from the radio tracks
+                    val randomTrack = radio.tracks.random()
+                    model.startPlayer(randomTrack)
+                }) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = "Play Radio")
                 }
             }

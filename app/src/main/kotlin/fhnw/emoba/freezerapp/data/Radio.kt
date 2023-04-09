@@ -7,8 +7,8 @@ class Radio(
     val image: String,
     val tracklist: String,
     var isFavorite: Boolean,
-    var imageBitmap: ImageBitmap? = null // new property to hold the downloaded image
-
+    var imageBitmap: ImageBitmap? = null,
+    var tracks: List<String> = emptyList()
 ) {
 
     override fun toString(): String {

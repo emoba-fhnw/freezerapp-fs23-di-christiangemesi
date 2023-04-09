@@ -30,8 +30,9 @@ object MovieService {
                     val cover = radioJson.getString("picture_medium")
                     val imageBitmap = downloadImage(cover)
                     val tracklist = radioJson.getString("tracklist")
+                    val tracks = downloadTracks(tracklist)
 
-                    filteredRadio.add(Radio(title, cover, tracklist, false, imageBitmap))
+                    filteredRadio.add(Radio(title, cover, tracklist, false, imageBitmap, tracks))
                 }
 
                 filteredRadio
@@ -53,4 +54,34 @@ object MovieService {
             null
         }
     }
+
+    private fun downloadTracks(tracklist: String): List<String> {
+        val url = URL(tracklist)
+        val connection = url.openConnection() as HttpsURLConnection
+
+        try {
+            connection.connect()
+            val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
+            val jsonObject = JSONObject(jsonString)
+
+            if (jsonObject.has("data")) {
+                val tracksJsonArray = jsonObject.getJSONArray("data")
+                val tracks = mutableListOf<String>()
+
+                for (i in 0 until tracksJsonArray.length()) {
+                    val trackJson = tracksJsonArray.getJSONObject(i)
+                    val previewUrl = trackJson.getString("preview")
+                    tracks.add(previewUrl)
+                }
+                return tracks;
+            } else {
+                return emptyList()
+            }
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+
+
 }

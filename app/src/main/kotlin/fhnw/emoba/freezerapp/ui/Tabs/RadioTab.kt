@@ -24,34 +24,31 @@ import java.net.URL
 fun RadioTab(model: FreezerModel) {
 
     Column {
-        Text("Radioooooo")
         val radioList = model.movieList
         radioList.forEach { item ->
-            Text(item.title)
-            item.image?.let { ShowImage(it) }
-
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                item.imageBitmap?.let { // Use the downloaded image if available
+                    Image(
+                        it,
+                        contentDescription = "Radio Image",
+                        Modifier
+                            .size(60.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Spacer(Modifier.width(16.dp))
+                Text(item.title)
+            }
         }
     }
 
 }
 
-@Composable
-fun ShowImage(it: String) {
-    val url = URL(it)
-    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-    connection.doInput = true
-    connection.connect()
-    val input = connection.inputStream
-    val myBitmap = BitmapFactory.decodeStream(input)
-    Image(
-        bitmap = myBitmap.asImageBitmap(),
-        contentDescription = "Image",
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .clip(RoundedCornerShape(4.dp)),
-        contentScale = ContentScale.Crop
-    )
-}
+
 
 

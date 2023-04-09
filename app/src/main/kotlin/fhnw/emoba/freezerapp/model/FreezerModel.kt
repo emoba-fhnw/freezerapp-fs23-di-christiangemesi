@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import fhnw.emoba.freezerapp.data.Radio
+import fhnw.emoba.freezerapp.data.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -19,6 +20,8 @@ class FreezerModel(private val service: MovieService) {
     var loading by mutableStateOf(false)
     var movieList by mutableStateOf<List<Radio>>(emptyList())
     var favoriteRadios by mutableStateOf<List<Radio>>(emptyList())
+
+    var songsList by mutableStateOf<List<Song>>(emptyList())
 
     private val background = SupervisorJob()
     private val modelScope = CoroutineScope(background + Dispatchers.IO)
@@ -82,6 +85,12 @@ class FreezerModel(private val service: MovieService) {
         modelScope.launch {
             movieList = service.getRadioStations()
             loading = false
+        }
+    }
+
+    fun loadSongAsync(songQuery: String) {
+        modelScope.launch {
+            songsList = service.filterSongBySearch(songQuery)
         }
     }
 

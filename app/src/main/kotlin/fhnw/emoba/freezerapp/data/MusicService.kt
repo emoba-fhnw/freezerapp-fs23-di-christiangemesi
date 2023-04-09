@@ -2,12 +2,48 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import fhnw.emoba.freezerapp.data.Radio
+import fhnw.emoba.freezerapp.data.Song
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 object MovieService {
+
+    fun filterSongBySearch(searchQuery: String) : List<Song> {
+        val url = URL("https://api.deezer.com/search/track?q=$searchQuery")
+        val connection = url.openConnection() as HttpsURLConnection
+
+        return try {
+            connection.connect()
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val jsonString = reader.readText()
+            reader.close()
+
+            val jsonObject = JSONObject(jsonString)
+            val songsJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
+
+            val songs = mutableListOf<Song>()
+
+            for (i in 0 until songsJsonArray.length()) {
+                val songJson = songsJsonArray.getJSONObject(i)
+                val title = songJson.getString("title")
+                val artist = songJson.getJSONObject("artist").getString("name")
+                val preview = songJson.getString("preview")
+                val image = songJson.getJSONObject("album").getString("cover_medium")
+                val imageBitmap = downloadImage(image)
+
+                songs.add(Song(title, artist, preview, imageBitmap, false))
+            }
+
+            songs
+        } finally {
+            connection.disconnect()
+        }
+    }
+
 
     fun getRadioStations(): List<Radio> {
         val url = URL("https://api.deezer.com/radio")

@@ -40,6 +40,8 @@ class FreezerModel(private val service: MovieService) {
         private set
 
     private var currentTrack: String? = null
+    var currentRadio by mutableStateOf<Radio?>(null)
+
 
     fun startPlayer(randomTrack: String) {
         playerIsReady = false
@@ -60,7 +62,9 @@ class FreezerModel(private val service: MovieService) {
     fun pausePlayer() {
         player.pause()
         playerIsReady = true
+        currentRadio = null // set current radio to null
     }
+
 
     fun fromStart() {
         player.seekTo(0)

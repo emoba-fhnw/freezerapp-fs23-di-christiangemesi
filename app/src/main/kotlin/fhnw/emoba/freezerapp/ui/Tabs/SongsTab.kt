@@ -65,6 +65,14 @@ fun SongItem(song: Song, model: FreezerModel) {
     var isFavorite by remember { mutableStateOf(song.isFavorite) }
     var isPlaying by remember { mutableStateOf(model.currentSong == song && !model.playerIsReady) } // track playing status
 
+    // Update isPlaying state if current song changes
+    LaunchedEffect(model.currentSong) {
+        isPlaying = model.currentSong == song && !model.playerIsReady
+    }
+
+    val songIndex = model.songsList.indexOf(song)
+    val hasNextSong = songIndex < model.songsList.size - 1
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -87,11 +95,10 @@ fun SongItem(song: Song, model: FreezerModel) {
             Text(song.artist)
         }
         IconButton(onClick = {
-            isPlaying = !isPlaying
             if (isPlaying) {
-                model.startPlayer(song)
-            } else {
                 model.pausePlayer()
+            } else {
+                model.startPlayer(song)
             }
         }) {
             Icon(
@@ -116,7 +123,17 @@ fun SongItem(song: Song, model: FreezerModel) {
                 contentDescription = "Play from start"
             )
         }
+        if (hasNextSong) {
+            IconButton(onClick = {
+                val nextSong = model.songsList[songIndex + 1]
+                model.startPlayer(nextSong)
+            }) {
+                Icon(
+                    Icons.Filled.SkipNext,
+                    contentDescription = "Next song"
+                )
+            }
+        }
     }
 }
-
 

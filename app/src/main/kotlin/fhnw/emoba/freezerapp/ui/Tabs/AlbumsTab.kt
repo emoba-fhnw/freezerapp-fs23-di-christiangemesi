@@ -47,14 +47,18 @@ fun AlbumsTab(model: FreezerModel) {
         albums = newAlbums
     }
 
-    // Display the search results
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
-        albums.forEach { album ->
-            item {
-                AlbumItem(album, model) // pass the model instance
+    Box(Modifier.fillMaxSize()) {
+        Column {
+            // add header content here
+        }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            albums.forEach { album ->
+                item {
+                    AlbumItem(album, model) // pass the model instance
+                }
             }
         }
     }
@@ -108,8 +112,15 @@ fun AlbumItem(album: Album, model: FreezerModel) {
                 },
                 Modifier.padding(vertical = 8.dp)
             ) {
-                Text("Add to Favorites")
+                //display all tracks from album.tracks
+                Column(Modifier.fillMaxWidth()) {
+                    album.tracks.forEach { track ->
+                        Text(track)
+                    }
+                }
+
             }
+
         }
     }
 }

@@ -38,6 +38,7 @@ object MovieService {
                 val tracklist = albumJson.getString("tracklist")
                 val tracks = downloadTracks(tracklist)
 
+
                 filteredAlbums.add(Album(title, artist, coverBitmap, tracks, false))
 
             }

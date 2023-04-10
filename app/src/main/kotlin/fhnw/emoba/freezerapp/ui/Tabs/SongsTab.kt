@@ -40,9 +40,8 @@ fun SongsTab(model: FreezerModel) {
         }
     }
 
-    LaunchedEffect(searchText) {
-        val newSongs = model.songsList
-        songs = newSongs
+    LaunchedEffect(model.songsList) {
+        songs = model.songsList
     }
 
     // Display the search results

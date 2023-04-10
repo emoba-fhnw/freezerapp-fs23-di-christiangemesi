@@ -42,6 +42,10 @@ fun AlbumsTab(model: FreezerModel) {
         }
     }
 
+    LaunchedEffect(model.albumsList) {
+        albums = model.albumsList
+    }
+
     LaunchedEffect(searchText) {
         val newAlbums = model.albumsList
         albums = newAlbums

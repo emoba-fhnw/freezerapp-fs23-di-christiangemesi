@@ -108,6 +108,14 @@ fun SongItem(song: Song, model: FreezerModel) {
                 contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites"
             )
         }
+        IconButton(onClick = {
+            model.fromStart()
+        }) {
+            Icon(
+                Icons.Filled.Replay,
+                contentDescription = "Play from start"
+            )
+        }
     }
 }
 

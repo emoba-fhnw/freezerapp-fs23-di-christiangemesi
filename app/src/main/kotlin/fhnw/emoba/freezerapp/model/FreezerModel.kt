@@ -20,13 +20,13 @@ class FreezerModel(private val service: MovieService) {
     var selectedTab by mutableStateOf(AvailableTabs.HITS)
 
     var loading by mutableStateOf(false)
-    var radioList by mutableStateOf<List<Radio>>(emptyList())
-    var favoriteRadios by mutableStateOf<List<Radio>>(emptyList())
+    var radioList by mutableStateOf(emptyList<Radio>())
+    var favoriteRadios by mutableStateOf(emptyList<Radio>())
 
-    var songsList by mutableStateOf<List<Song>>(emptyList())
-    var favoriteSongs by mutableStateOf<List<Song>>(emptyList())
+    var songsList by mutableStateOf(emptyList<Song>())
+    var favoriteSongs by mutableStateOf(emptyList<Song>())
 
-    var albumsList by mutableStateOf<List<Album>>(emptyList())
+    var albumsList by mutableStateOf(emptyList<Album>())
 
     private val background = SupervisorJob()
     private val modelScope = CoroutineScope(background + Dispatchers.IO)
@@ -46,56 +46,45 @@ class FreezerModel(private val service: MovieService) {
     var playerIsReady by mutableStateOf(true)
         private set
 
-    var currentRadio: Radio? by mutableStateOf(null) // track currently playing radio
-    var currentSong: Song? by mutableStateOf(null) // track currently playing song
+    var currentRadio by mutableStateOf<Radio?>(null) // track currently playing radio
+        private set
+
+    var currentSong by mutableStateOf<Song?>(null) // track currently playing song
+        private set
 
     fun startPlayer(song: Song) {
         playerIsReady = false
-        try {
-            if (currentSong == song && !player.isPlaying) { // if the same song is already playing, resume playing
-                player.start()
-            } else {
-                currentSong = song
-                currentRadio = null
-                player.reset()
-                player.setDataSource(song.preview)
-                player.prepareAsync()
-            }
-        } catch (e: Exception) {
-            playerIsReady = true
+        if (currentSong == song && !player.isPlaying) {
+            player.start()
+        } else {
+            currentSong = song
+            currentRadio = null
+            player.reset()
+            player.setDataSource(song.preview)
+            player.prepareAsync()
         }
     }
 
     fun startPlayer(randomTrack: String) {
         playerIsReady = false
-        try {
-            if (currentRadio != null && currentRadio!!.tracks.contains(randomTrack) && !player.isPlaying) { // if the same track is already playing, resume playing
-                player.start()
-            } else {
-                currentRadio?.let { // stop playing the current radio
-                    pausePlayer()
-                }
-                currentRadio = null
-                for (radio in radioList) { // find the radio with the selected track and set it as the current radio
-                    if (radio.tracks.contains(randomTrack)) {
-                        currentRadio = radio
-                        break
-                    }
-                }
-                player.reset()
-                player.setDataSource(randomTrack)
-                player.prepareAsync()
+        if (currentRadio != null && currentRadio!!.tracks.contains(randomTrack) && !player.isPlaying) {
+            player.start()
+        } else {
+            currentRadio = radioList.find { it.tracks.contains(randomTrack) }
+            currentRadio?.let {
+                pausePlayer()
             }
-        } catch (e: Exception) {
-            playerIsReady = true
+            player.reset()
+            player.setDataSource(randomTrack)
+            player.prepareAsync()
         }
     }
 
     fun pausePlayer() {
         player.pause()
         playerIsReady = true
-        currentRadio = null // reset current radio
-        currentSong = null // reset current song
+        currentRadio = null
+        currentSong = null
     }
 
     fun fromStart() {
@@ -115,18 +104,19 @@ class FreezerModel(private val service: MovieService) {
     fun loadSongAsync(songQuery: String) {
         modelScope.launch {
             songsList = service.filterSongBySearch(songQuery)
-            println("Songslist from backend: " + songsList.size) //25 inside
+            println("Songslist from backend: " + songsList.size)
         }
     }
 
     fun loadAlbumAsync(albumQuery: String) {
         modelScope.launch {
             albumsList = service.filterAlbumsBySearch(albumQuery)
-            println("Songslist from backend: " + songsList.size) //25 inside
+            println("Albumslist from backend: " + albumsList.size)
         }
     }
 
     fun toggleFavorite(radio: Radio) {
+        radio.isFavorite
         radio.isFavorite = !radio.isFavorite
         favoriteRadios = if (radio.isFavorite) {
             favoriteRadios + radio
@@ -143,6 +133,4 @@ class FreezerModel(private val service: MovieService) {
             favoriteSongs - song
         }
     }
-
-
 }

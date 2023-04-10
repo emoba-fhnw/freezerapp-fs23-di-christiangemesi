@@ -2,7 +2,6 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import fhnw.emoba.freezerapp.data.Album
-import fhnw.emoba.freezerapp.data.Radio
 import fhnw.emoba.freezerapp.data.Song
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -12,7 +11,6 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 object MovieService {
-
 
     fun getAllRadioStations(): List<Album> {
         val url = URL("https://api.deezer.com/radio")
@@ -111,7 +109,6 @@ object MovieService {
             connection.disconnect()
         }
     }
-
 
     private fun downloadImage(urlString: String): ImageBitmap? {
         return try {

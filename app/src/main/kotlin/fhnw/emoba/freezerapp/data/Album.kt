@@ -14,6 +14,5 @@ class Album(
         return "Album(title='$title', artist='$artist', imageBitmap=$imageBitmap, tracks=$tracks)"
     }
 
-
 }
 

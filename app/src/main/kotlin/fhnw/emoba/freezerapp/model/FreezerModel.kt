@@ -7,7 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import fhnw.emoba.freezerapp.data.Album
-import fhnw.emoba.freezerapp.data.Radio
+
 import fhnw.emoba.freezerapp.data.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,8 +45,6 @@ class FreezerModel(private val service: MovieService) {
     var playerIsReady by mutableStateOf(true)
         private set
 
-    var currentRadio by mutableStateOf<Radio?>(null) // track currently playing radio
-        private set
 
     var currentSong by mutableStateOf<Song?>(null) // track currently playing song
         private set
@@ -57,7 +55,6 @@ class FreezerModel(private val service: MovieService) {
             player.start()
         } else {
             currentSong = song
-            currentRadio = null
             player.reset()
             player.setDataSource(song.preview)
             player.prepareAsync()
@@ -65,11 +62,9 @@ class FreezerModel(private val service: MovieService) {
     }
 
 
-
     fun pausePlayer() {
         player.pause()
         playerIsReady = true
-        currentRadio = null
         currentSong = null
     }
 

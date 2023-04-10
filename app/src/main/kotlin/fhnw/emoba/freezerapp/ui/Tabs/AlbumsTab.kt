@@ -115,7 +115,7 @@ fun AlbumItem(album: Album, model: FreezerModel) {
                 //display all tracks from album.tracks
                 Column(Modifier.fillMaxWidth()) {
                     album.tracks.forEach { track ->
-                        Text(track)
+                        SongItem(track, model)
                     }
                 }
 

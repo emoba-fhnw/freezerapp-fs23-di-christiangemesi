@@ -25,36 +25,29 @@ object MovieService {
             val jsonObject = JSONObject(jsonString)
             val albumsJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
 
-
             val filteredAlbums = mutableListOf<Album>()
-
 
             for (i in 0 until albumsJsonArray.length()) {
                 val albumJson = albumsJsonArray.getJSONObject(i)
                 val title = albumJson.getString("title")
                 val artist = albumJson.getJSONObject("artist").getString("name")
                 val cover = albumJson.getString("cover_medium")
-                val coverBitmap = downloadImage(cover)
                 val tracklist = albumJson.getString("tracklist")
-                val tracks = downloadTracks(tracklist)
-
-                val songTitles = downloadSongTitles(tracklist)
-                println("Song titles: $songTitles")
+                val coverBitmap = downloadImage(cover)
+                val song = downloadSongTitlesAndTracks(tracklist, coverBitmap)
 
 
-
-
-                filteredAlbums.add(Album(title, artist, coverBitmap,songTitles  ))
-
+                filteredAlbums.add(Album(title, artist, coverBitmap, song))
             }
 
             filteredAlbums
-
-        }finally {
+        } finally {
             connection.disconnect()
         }
-
     }
+
+
+
 
 
     fun filterSongBySearch(searchQuery: String) : List<Song> {
@@ -161,7 +154,7 @@ object MovieService {
         }
     }
 
-    private fun downloadSongTitles(tracklist: String): List<String> {
+    private fun downloadSongTitlesAndTracks(tracklist: String, cover: ImageBitmap?  ): List<Song> {
         val url = URL(tracklist)
         val connection = url.openConnection() as HttpsURLConnection
 
@@ -172,12 +165,14 @@ object MovieService {
 
             val tracksJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
 
-            val tracks = mutableListOf<String>()
+            val tracks = mutableListOf<Song>()
 
             for (i in 0 until tracksJsonArray.length()) {
                 val trackJson = tracksJsonArray.getJSONObject(i)
-                val previewUrl = trackJson.getString("title")
-                tracks.add(previewUrl)
+                val previewUrl = trackJson.getString("preview")
+                val title = trackJson.getString("title")
+
+                tracks.add(Song(title, "", previewUrl, cover, false) )   ;
             }
 
             tracks

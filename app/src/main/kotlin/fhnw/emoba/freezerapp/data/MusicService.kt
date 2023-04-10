@@ -38,8 +38,13 @@ object MovieService {
                 val tracklist = albumJson.getString("tracklist")
                 val tracks = downloadTracks(tracklist)
 
+                val songTitles = downloadSongTitles(tracklist)
+                println("Song titles: $songTitles")
 
-                filteredAlbums.add(Album(title, artist, coverBitmap, tracks, false))
+
+
+
+                filteredAlbums.add(Album(title, artist, coverBitmap,songTitles  ))
 
             }
 
@@ -147,6 +152,31 @@ object MovieService {
             for (i in 0 until tracksJsonArray.length()) {
                 val trackJson = tracksJsonArray.getJSONObject(i)
                 val previewUrl = trackJson.getString("preview")
+                tracks.add(previewUrl)
+            }
+
+            tracks
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    private fun downloadSongTitles(tracklist: String): List<String> {
+        val url = URL(tracklist)
+        val connection = url.openConnection() as HttpsURLConnection
+
+        return try {
+            connection.connect()
+            val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
+            val jsonObject = JSONObject(jsonString)
+
+            val tracksJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
+
+            val tracks = mutableListOf<String>()
+
+            for (i in 0 until tracksJsonArray.length()) {
+                val trackJson = tracksJsonArray.getJSONObject(i)
+                val previewUrl = trackJson.getString("title")
                 tracks.add(previewUrl)
             }
 

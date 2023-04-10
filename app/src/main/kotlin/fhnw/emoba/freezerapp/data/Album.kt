@@ -7,7 +7,6 @@ class Album(
     val artist: String,
     var imageBitmap: ImageBitmap? = null,
     var tracks: List<String> = emptyList(),
-    var isFavorite: Boolean
 ) {
 
 

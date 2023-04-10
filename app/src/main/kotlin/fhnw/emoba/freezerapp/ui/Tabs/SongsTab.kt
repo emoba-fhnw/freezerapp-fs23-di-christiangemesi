@@ -59,7 +59,6 @@ fun SongsTab(model: FreezerModel) {
 }
 
 
-
 @Composable
 fun SongItem(song: Song, model: FreezerModel) {
     var isFavorite by remember { mutableStateOf(song.isFavorite) }
@@ -123,17 +122,21 @@ fun SongItem(song: Song, model: FreezerModel) {
                 contentDescription = "Play from start"
             )
         }
-        if (hasNextSong) {
-            IconButton(onClick = {
-                val nextSong = model.songsList[songIndex + 1]
-                model.startPlayer(nextSong)
-            }) {
-                Icon(
-                    Icons.Filled.SkipNext,
-                    contentDescription = "Next song"
-                )
+
+        IconButton(onClick = {
+            val nextSongIndex = songIndex + 1
+            if (nextSongIndex < model.songsList.size) {
+                model.startPlayer(model.songsList[nextSongIndex])
+            } else {
+                model.startPlayer(model.songsList.first())
             }
+        }) {
+            Icon(
+                Icons.Filled.SkipNext,
+                contentDescription = "Next song"
+            )
         }
+
     }
 }
 

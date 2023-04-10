@@ -48,9 +48,6 @@ fun AlbumsTab(model: FreezerModel) {
     }
 
     Box(Modifier.fillMaxSize()) {
-        Column {
-            // add header content here
-        }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 8.dp)
@@ -68,6 +65,7 @@ fun AlbumsTab(model: FreezerModel) {
 @Composable
 fun AlbumItem(album: Album, model: FreezerModel) {
     var expanded by remember { mutableStateOf(false) }
+    val songs = remember { album.tracks }
 
     Row(
         Modifier
@@ -105,11 +103,10 @@ fun AlbumItem(album: Album, model: FreezerModel) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            album.tracks.forEach { track ->
-                SongItem(track, model)
+            songs.forEach { song ->
+                SongItem(song, model, songs) // pass the album's tracks to SongItem
             }
         }
     }
-
 }
 

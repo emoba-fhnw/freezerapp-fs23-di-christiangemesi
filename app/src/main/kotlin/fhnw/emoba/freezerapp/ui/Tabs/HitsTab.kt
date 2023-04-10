@@ -14,7 +14,7 @@ fun HitsTab(model: FreezerModel) {
     ) {
         model.favoriteSongs.forEach { song ->
             item {
-                SongItem(song, model) // pass the model instance
+                SongItem(song, model,model.favoriteSongs) // pass the model instance
             }
         }
         model.favoriteRadios.forEach { radio ->

@@ -52,7 +52,7 @@ fun SongsTab(model: FreezerModel) {
     ) {
         songs.forEach { song ->
             item {
-                SongItem(song, model) // pass the model instance
+                SongItem(song, model, songs) // pass the model instance
             }
         }
     }
@@ -60,7 +60,7 @@ fun SongsTab(model: FreezerModel) {
 
 
 @Composable
-fun SongItem(song: Song, model: FreezerModel) {
+fun SongItem(song: Song, model: FreezerModel, songs: List<Song>) {
     var isFavorite by remember { mutableStateOf(song.isFavorite) }
     var isPlaying by remember { mutableStateOf(model.currentSong == song && !model.playerIsReady) } // track playing status
 
@@ -69,13 +69,14 @@ fun SongItem(song: Song, model: FreezerModel) {
         isPlaying = model.currentSong == song && !model.playerIsReady
     }
 
-    val songIndex = model.songsList.indexOf(song)
-    val hasNextSong = songIndex < model.songsList.size - 1
+    val songIndex = songs.indexOf(song)
+    val hasNextSong = songIndex < songs.size - 1
 
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         song.imageBitmap?.let { bitmap ->
             Image(
@@ -122,13 +123,12 @@ fun SongItem(song: Song, model: FreezerModel) {
                 contentDescription = "Play from start"
             )
         }
-
         IconButton(onClick = {
             val nextSongIndex = songIndex + 1
-            if (nextSongIndex < model.songsList.size) {
-                model.startPlayer(model.songsList[nextSongIndex])
+            if (nextSongIndex < songs.size) {
+                model.startPlayer(songs[nextSongIndex])
             } else {
-                model.startPlayer(model.songsList.first())
+                model.startPlayer(songs.first())
             }
         }) {
             Icon(
@@ -139,4 +139,3 @@ fun SongItem(song: Song, model: FreezerModel) {
 
     }
 }
-

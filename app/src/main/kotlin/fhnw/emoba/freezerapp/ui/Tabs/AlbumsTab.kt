@@ -105,24 +105,11 @@ fun AlbumItem(album: Album, model: FreezerModel) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            Text(album.title)
-            Button(
-                onClick = {
-                    // Perform some action when the button is clicked
-                },
-                Modifier.padding(vertical = 8.dp)
-            ) {
-                //display all tracks from album.tracks
-                Column(Modifier.fillMaxWidth()) {
-                    album.tracks.forEach { track ->
-                        SongItem(track, model)
-                    }
-                }
-
+            album.tracks.forEach { track ->
+                SongItem(track, model)
             }
-
         }
     }
-}
 
+}
 

@@ -4,10 +4,10 @@ import MovieService
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import fhnw.emoba.freezerapp.data.Album
-
 import fhnw.emoba.freezerapp.data.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,11 +20,7 @@ class FreezerModel(private val service: MovieService) {
 
     var loading by mutableStateOf(false)
     var radioList by mutableStateOf(emptyList<Album>())
-    var favoriteRadios by mutableStateOf(emptyList<Song>())
-
     var songsList by mutableStateOf(emptyList<Song>())
-    var favoriteSongs by mutableStateOf(emptyList<Song>())
-
     var albumsList by mutableStateOf(emptyList<Album>())
 
     private val background = SupervisorJob()
@@ -45,9 +41,10 @@ class FreezerModel(private val service: MovieService) {
     var playerIsReady by mutableStateOf(true)
         private set
 
-
     var currentSong by mutableStateOf<Song?>(null) // track currently playing song
         private set
+
+    val favoriteSongs = mutableStateListOf<Song>()
 
     fun startPlayer(song: Song) {
         playerIsReady = false
@@ -60,7 +57,6 @@ class FreezerModel(private val service: MovieService) {
             player.prepareAsync()
         }
     }
-
 
     fun pausePlayer() {
         player.pause()
@@ -81,7 +77,6 @@ class FreezerModel(private val service: MovieService) {
             }
         }
     }
-
 
     fun loadRadioStationsAsync() {
         loading = true
@@ -104,11 +99,11 @@ class FreezerModel(private val service: MovieService) {
     }
 
     fun toggleFavorite(song: Song) {
-        song.isFavorite = !song.isFavorite
-        favoriteSongs = if (song.isFavorite) {
-            favoriteSongs + song
+        if (song.isFavorite) {
+            favoriteSongs.remove(song)
         } else {
-            favoriteSongs - song
+            favoriteSongs.add(song)
         }
+        song.isFavorite = !song.isFavorite
     }
 }

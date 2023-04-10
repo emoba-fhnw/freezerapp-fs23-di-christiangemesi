@@ -70,7 +70,6 @@ fun SongItem(song: Song, model: FreezerModel, songs: List<Song>) {
     }
 
     val songIndex = songs.indexOf(song)
-    val hasNextSong = songIndex < songs.size - 1
 
     Row(
         Modifier
@@ -116,7 +115,7 @@ fun SongItem(song: Song, model: FreezerModel, songs: List<Song>) {
             )
         }
         IconButton(onClick = {
-            model.fromStart()
+            model.fromStart(song)
         }) {
             Icon(
                 Icons.Filled.Replay,

@@ -125,31 +125,6 @@ object MovieService {
         }
     }
 
-    private fun downloadTracks(tracklist: String): List<String> {
-        val url = URL(tracklist)
-        val connection = url.openConnection() as HttpsURLConnection
-
-        return try {
-            connection.connect()
-            val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
-            val jsonObject = JSONObject(jsonString)
-
-            val tracksJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
-
-            val tracks = mutableListOf<String>()
-
-            for (i in 0 until tracksJsonArray.length()) {
-                val trackJson = tracksJsonArray.getJSONObject(i)
-                val previewUrl = trackJson.getString("preview")
-                tracks.add(previewUrl)
-            }
-
-            tracks
-        } finally {
-            connection.disconnect()
-        }
-    }
-
     private fun downloadSongTitlesAndTracks(tracklist: String, cover: ImageBitmap?  ): List<Song> {
         val url = URL(tracklist)
         val connection = url.openConnection() as HttpsURLConnection

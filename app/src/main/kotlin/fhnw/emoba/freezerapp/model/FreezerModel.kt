@@ -4,7 +4,6 @@ import MovieService
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import fhnw.emoba.freezerapp.data.Album
@@ -74,11 +73,20 @@ class FreezerModel(private val service: MovieService) {
         currentSong = null
     }
 
-    fun fromStart() {
-        player.seekTo(0)
-        player.start()
-        playerIsReady = false
+    fun fromStart(song: Song) {
+        currentSong = song
+        player.apply {
+            reset()
+            setDataSource(song.preview)
+            prepareAsync()
+            setOnPreparedListener {
+                seekTo(0)
+                start()
+                playerIsReady = false
+            }
+        }
     }
+
 
     fun loadRadioStationsAsync() {
         loading = true

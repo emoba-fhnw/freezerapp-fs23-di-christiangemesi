@@ -15,7 +15,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class FreezerModel(private val service: MovieService) {
-    val title = "Tabs Example App"
+
     var selectedTab by mutableStateOf(AvailableTabs.HITS)
 
     var loading by mutableStateOf(false)
@@ -88,13 +88,13 @@ class FreezerModel(private val service: MovieService) {
 
     fun loadSongAsync(songQuery: String) {
         modelScope.launch {
-            songsList = service.filterSongBySearch(songQuery)
+            songsList = service.getSongBySearch(songQuery)
         }
     }
 
     fun loadAlbumAsync(albumQuery: String) {
         modelScope.launch {
-            albumsList = service.filterAlbumsBySearch(albumQuery)
+            albumsList = service.getAlbumsBySearch(albumQuery)
         }
     }
 

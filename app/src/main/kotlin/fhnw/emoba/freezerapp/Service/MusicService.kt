@@ -10,17 +10,37 @@ import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
-object MovieService {
 
-    fun getAllRadioStations(): List<Album> {
-        val url = URL("https://api.deezer.com/radio")
-        val connection = url.openConnection() as HttpsURLConnection
+/**
+ * A simple HTTP service that can be used to make HTTP requests. Own implementation because the
+ * the other class is final and cannot be mocked.
+ */
+class HttpService {
+    fun get(url: String): String {
+        val connection = URL(url).openConnection() as HttpURLConnection
         return try {
             connection.connect()
             val reader = BufferedReader(InputStreamReader(connection.inputStream))
             val jsonString = reader.readText()
             reader.close()
+            jsonString
+        } finally {
+            connection.disconnect()
+        }
+    }
+}
 
+object MovieService {
+
+    private const val API_DEEZER_BASE_URL = "https://api.deezer.com"
+
+    private val httpService = HttpService()
+
+    fun getAllRadioStations(): List<Album> {
+        val url = "$API_DEEZER_BASE_URL/radio"
+        val jsonString = httpService.get(url)
+
+        return try {
             val jsonObject = JSONObject(jsonString)
             val albumsJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
 
@@ -30,29 +50,26 @@ object MovieService {
                 val albumJson = albumsJsonArray.getJSONObject(i)
                 val title = albumJson.getString("title")
                 val cover = albumJson.getString("picture_medium")
-                val imageBitmap = downloadImage(cover)
+                val imageBitmap = downloadImageBitmap(cover)
 
                 val tracklist = albumJson.getString("tracklist")
-                val songs = downloadSongTitlesAndTracks(tracklist, imageBitmap)
+                val songs = downloadSongs(tracklist, imageBitmap)
 
                 filteredAlbums.add(Album(title, "", imageBitmap, songs))
 
             }
             println("Albums: ${filteredAlbums.toString()}")
             filteredAlbums
-        } finally {
-            connection.disconnect()
+        } catch (e: Exception) {
+            emptyList()
         }
     }
-    fun filterAlbumsBySearch(searchQuery: String): List<Album> {
-        val url = URL("https://api.deezer.com/search/album?q=$searchQuery")
-        val connection = url.openConnection() as HttpsURLConnection
-        return try {
-            connection.connect()
-            val reader = BufferedReader(InputStreamReader(connection.inputStream))
-            val jsonString = reader.readText()
-            reader.close()
 
+    fun getAlbumsBySearch(searchQuery: String): List<Album> {
+        val url = "$API_DEEZER_BASE_URL/search/album?q=$searchQuery"
+        val jsonString = httpService.get(url)
+
+        return try {
             val jsonObject = JSONObject(jsonString)
             val albumsJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
 
@@ -62,32 +79,26 @@ object MovieService {
                 val albumJson = albumsJsonArray.getJSONObject(i)
                 val title = albumJson.getString("title")
                 val artist = albumJson.getJSONObject("artist").getString("name")
-                val cover = albumJson.getString("cover_medium")
-                val tracklist = albumJson.getString("tracklist")
-                val coverBitmap = downloadImage(cover)
-                val song = downloadSongTitlesAndTracks(tracklist, coverBitmap)
+                val coverUrl = albumJson.getString("cover_medium")
+                val imageBitmap = downloadImageBitmap(coverUrl)
+                val tracklistUrl = albumJson.getString("tracklist")
+                val songs = downloadSongs(tracklistUrl, imageBitmap)
 
-
-                filteredAlbums.add(Album(title, artist, coverBitmap, song))
+                filteredAlbums.add(Album(title, artist, imageBitmap, songs))
             }
 
             filteredAlbums
-        } finally {
-            connection.disconnect()
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
 
-    fun filterSongBySearch(searchQuery: String) : List<Song> {
-        val url = URL("https://api.deezer.com/search/track?q=$searchQuery")
-        val connection = url.openConnection() as HttpsURLConnection
+    fun getSongBySearch(searchQuery: String): List<Song> {
+        val url = "$API_DEEZER_BASE_URL/search/track?q=$searchQuery"
+        val jsonString = httpService.get(url)
 
         return try {
-            connection.connect()
-            val reader = BufferedReader(InputStreamReader(connection.inputStream))
-            val jsonString = reader.readText()
-            reader.close()
-
             val jsonObject = JSONObject(jsonString)
             val songsJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
 
@@ -97,55 +108,52 @@ object MovieService {
                 val songJson = songsJsonArray.getJSONObject(i)
                 val title = songJson.getString("title")
                 val artist = songJson.getJSONObject("artist").getString("name")
-                val preview = songJson.getString("preview")
-                val image = songJson.getJSONObject("album").getString("cover_medium")
-                val imageBitmap = downloadImage(image)
-
-                songs.add(Song(title, artist, preview, imageBitmap, false))
+                val previewUrl = songJson.getString("preview")
+                val coverUrl = songJson.getJSONObject("album").getString("cover_medium")
+                val imageBitmap = downloadImageBitmap(coverUrl)
+                songs.add(Song(title, artist, previewUrl, imageBitmap, false))
             }
 
             songs
-        } finally {
-            connection.disconnect()
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
-    private fun downloadImage(urlString: String): ImageBitmap? {
+
+    private fun downloadImageBitmap(urlString: String): ImageBitmap? {
+        val url = URL(urlString)
+        val connection = url.openConnection() as HttpURLConnection
+
         return try {
-            val imageUrl = URL(urlString)
-            val connection = imageUrl.openConnection() as HttpURLConnection
-            connection.doInput = true
             connection.connect()
             BitmapFactory.decodeStream(connection.inputStream).asImageBitmap()
         } catch (e: Exception) {
             null
-        }
-    }
-
-    private fun downloadSongTitlesAndTracks(tracklist: String, cover: ImageBitmap?  ): List<Song> {
-        val url = URL(tracklist)
-        val connection = url.openConnection() as HttpsURLConnection
-
-        return try {
-            connection.connect()
-            val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
-            val jsonObject = JSONObject(jsonString)
-
-            val tracksJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
-
-            val tracks = mutableListOf<Song>()
-
-            for (i in 0 until tracksJsonArray.length()) {
-                val trackJson = tracksJsonArray.getJSONObject(i)
-                val previewUrl = trackJson.getString("preview")
-                val title = trackJson.getString("title")
-
-                tracks.add(Song(title, "", previewUrl, cover, false) )   ;
-            }
-
-            tracks
         } finally {
             connection.disconnect()
         }
     }
+
+    private fun downloadSongs(tracklistUrl: String, cover: ImageBitmap?): List<Song> {
+        val httpService = HttpService()
+
+        val jsonString = httpService.get(tracklistUrl)
+        val jsonObject = JSONObject(jsonString)
+
+        val songsJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
+
+        val songs = mutableListOf<Song>()
+
+        for (i in 0 until songsJsonArray.length()) {
+            val songJson = songsJsonArray.getJSONObject(i)
+            val previewUrl = songJson.getString("preview")
+            val title = songJson.getString("title")
+
+            songs.add(Song(title, "", previewUrl, cover, false))
+        }
+
+        return songs
+    }
+
 }

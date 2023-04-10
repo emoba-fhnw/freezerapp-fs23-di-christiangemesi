@@ -9,8 +9,6 @@ import fhnw.emoba.freezerapp.ui.Tabs.AlbumItem
 
 @Composable
 fun RadioTab(model: FreezerModel) {
-
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween

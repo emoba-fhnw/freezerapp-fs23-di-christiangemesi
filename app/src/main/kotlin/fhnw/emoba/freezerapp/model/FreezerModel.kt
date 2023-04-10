@@ -112,6 +112,7 @@ class FreezerModel(private val service: MovieService) {
     fun loadSongAsync(songQuery: String) {
         modelScope.launch {
             songsList = service.filterSongBySearch(songQuery)
+            println("Songslist from backend: " + songsList.size) //25 inside
         }
     }
 

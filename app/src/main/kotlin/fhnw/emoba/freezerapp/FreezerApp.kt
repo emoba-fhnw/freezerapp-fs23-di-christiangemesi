@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import fhnw.emoba.EmobaApp
 import fhnw.emoba.freezerapp.model.FreezerModel
-import fhnw.emoba.freezerapp.ui.Tabs.AppUi
+import fhnw.emoba.freezerapp.ui.AppUi
 
 
 object FreezerApp : EmobaApp {

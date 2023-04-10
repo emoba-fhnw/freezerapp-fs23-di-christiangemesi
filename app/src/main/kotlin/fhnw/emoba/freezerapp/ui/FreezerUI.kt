@@ -1,16 +1,22 @@
-package fhnw.emoba.freezerapp.ui.Tabs
+package fhnw.emoba.freezerapp.ui
 
 import HitsTab
 import RadioTab
 import SongsTab
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import fhnw.emoba.R
 import fhnw.emoba.freezerapp.model.FreezerModel
 import fhnw.emoba.freezerapp.model.AvailableTabs
+import fhnw.emoba.freezerapp.ui.Tabs.AlbumsTab
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +36,24 @@ fun AppUi(model: FreezerModel) {
 @Composable
 private fun Bar(model: FreezerModel) {
     with(model) {
-        TopAppBar(title = { Text(title) })
+        TopAppBar(
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+                    val deezerLogo: Painter = painterResource(id = R.drawable.deezerlogo)
+                    Spacer(modifier =Modifier.width(100.dp))
+                    Image(
+                        painter = deezerLogo,
+                        contentDescription = "Deezer logo",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .scale(10f)
+                    )
+                }
+            }
+        )
     }
 }
 

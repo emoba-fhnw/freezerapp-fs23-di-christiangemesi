@@ -13,6 +13,39 @@ import javax.net.ssl.HttpsURLConnection
 
 object MovieService {
 
+
+    fun getAllRadioStations(): List<Album> {
+        val url = URL("https://api.deezer.com/radio")
+        val connection = url.openConnection() as HttpsURLConnection
+        return try {
+            connection.connect()
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val jsonString = reader.readText()
+            reader.close()
+
+            val jsonObject = JSONObject(jsonString)
+            val albumsJsonArray = jsonObject.optJSONArray("data") ?: return emptyList()
+
+            val filteredAlbums = mutableListOf<Album>()
+
+            for (i in 0 until albumsJsonArray.length()) {
+                val albumJson = albumsJsonArray.getJSONObject(i)
+                val title = albumJson.getString("title")
+                val cover = albumJson.getString("picture_medium")
+                val imageBitmap = downloadImage(cover)
+
+                val tracklist = albumJson.getString("tracklist")
+                val songs = downloadSongTitlesAndTracks(tracklist, imageBitmap)
+
+                filteredAlbums.add(Album(title, "", imageBitmap, songs))
+
+            }
+            println("Albums: ${filteredAlbums.toString()}")
+            filteredAlbums
+        } finally {
+            connection.disconnect()
+        }
+    }
     fun filterAlbumsBySearch(searchQuery: String): List<Album> {
         val url = URL("https://api.deezer.com/search/album?q=$searchQuery")
         val connection = url.openConnection() as HttpsURLConnection
@@ -47,9 +80,6 @@ object MovieService {
     }
 
 
-
-
-
     fun filterSongBySearch(searchQuery: String) : List<Song> {
         val url = URL("https://api.deezer.com/search/track?q=$searchQuery")
         val connection = url.openConnection() as HttpsURLConnection
@@ -82,40 +112,6 @@ object MovieService {
         }
     }
 
-
-    fun getRadioStations(): List<Radio> {
-        val url = URL("https://api.deezer.com/radio")
-        val connection = url.openConnection() as HttpsURLConnection
-
-        return try {
-            connection.connect()
-            val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
-            val jsonObject = JSONObject(jsonString)
-
-            if (!jsonObject.has("data")) {
-                emptyList()
-            } else {
-                val radioJsonArray = jsonObject.getJSONArray("data")
-                val filteredRadio = mutableListOf<Radio>()
-
-                for (i in 0 until radioJsonArray.length()) {
-                    val radioJson = radioJsonArray.getJSONObject(i)
-                    val title = radioJson.getString("title")
-                    val cover = radioJson.getString("picture_medium")
-                    val imageBitmap = downloadImage(cover)
-                    val tracklist = radioJson.getString("tracklist")
-                    val tracks = downloadTracks(tracklist)
-
-                    filteredRadio.add(Radio(title, false, imageBitmap, tracks))
-
-                }
-
-                filteredRadio
-            }
-        } finally {
-            connection.disconnect()
-        }
-    }
 
     private fun downloadImage(urlString: String): ImageBitmap? {
         return try {

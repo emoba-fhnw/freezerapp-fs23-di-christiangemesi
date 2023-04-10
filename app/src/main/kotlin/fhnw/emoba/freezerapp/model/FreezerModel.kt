@@ -20,8 +20,8 @@ class FreezerModel(private val service: MovieService) {
     var selectedTab by mutableStateOf(AvailableTabs.HITS)
 
     var loading by mutableStateOf(false)
-    var radioList by mutableStateOf(emptyList<Radio>())
-    var favoriteRadios by mutableStateOf(emptyList<Radio>())
+    var radioList by mutableStateOf(emptyList<Album>())
+    var favoriteRadios by mutableStateOf(emptyList<Song>())
 
     var songsList by mutableStateOf(emptyList<Song>())
     var favoriteSongs by mutableStateOf(emptyList<Song>())
@@ -65,20 +65,7 @@ class FreezerModel(private val service: MovieService) {
         }
     }
 
-    fun startPlayer(randomTrack: String) {
-        playerIsReady = false
-        if (currentRadio != null && currentRadio!!.tracks.contains(randomTrack) && !player.isPlaying) {
-            player.start()
-        } else {
-            currentRadio = radioList.find { it.tracks.contains(randomTrack) }
-            currentRadio?.let {
-                pausePlayer()
-            }
-            player.reset()
-            player.setDataSource(randomTrack)
-            player.prepareAsync()
-        }
-    }
+
 
     fun pausePlayer() {
         player.pause()
@@ -96,7 +83,7 @@ class FreezerModel(private val service: MovieService) {
     fun loadRadioStationsAsync() {
         loading = true
         modelScope.launch {
-            radioList = service.getRadioStations()
+            radioList = service.getAllRadioStations()
             loading = false
         }
     }
@@ -112,16 +99,6 @@ class FreezerModel(private val service: MovieService) {
         modelScope.launch {
             albumsList = service.filterAlbumsBySearch(albumQuery)
             println("Albumslist from backend: " + albumsList.size)
-        }
-    }
-
-    fun toggleFavorite(radio: Radio) {
-        radio.isFavorite
-        radio.isFavorite = !radio.isFavorite
-        favoriteRadios = if (radio.isFavorite) {
-            favoriteRadios + radio
-        } else {
-            favoriteRadios - radio
         }
     }
 

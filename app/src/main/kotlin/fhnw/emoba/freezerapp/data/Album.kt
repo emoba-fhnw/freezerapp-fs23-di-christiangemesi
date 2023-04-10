@@ -9,6 +9,11 @@ class Album(
     var tracks: List<Song> = emptyList(),
 ) {
 
+    @Override
+    override fun toString(): String {
+        return "Album(title='$title', artist='$artist', imageBitmap=$imageBitmap, tracks=$tracks)"
+    }
+
 
 }
 

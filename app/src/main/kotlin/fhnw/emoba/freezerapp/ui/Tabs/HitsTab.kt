@@ -12,11 +12,15 @@ fun HitsTab(model: FreezerModel) {
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
+        model.favoriteSongs.forEach { song ->
+            item {
+                SongItem(song, model) // pass the model instance
+            }
+        }
         model.favoriteRadios.forEach { radio ->
             item {
                 RadioItem(radio, model) // pass the model instance
             }
         }
-
     }
 }
